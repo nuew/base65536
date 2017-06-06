@@ -1,11 +1,11 @@
 [package]
 name = "base65536"
-version = "0.1.0"
+version = "0.2.0"
 authors = ["Nuew <code@nuew.net>"]
 license = "Apache-2.0"
 description = "Unicode's answer to base64"
 repository = "https://github.com/nuew/base65536"
-documentation = "https://docs.rs/base65536/0.1.0/base65536"
+documentation = "https://docs.rs/base65536"
 readme = "README.md"
 keywords = ["encode", "decode", "utf-8"]
 
