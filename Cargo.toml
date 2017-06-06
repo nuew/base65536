@@ -13,4 +13,5 @@ keywords = ["encode", "decode", "utf-8"]
 travis-ci = { repository = "nuew/base65536", branch = "master" }
 
 [dependencies]
+fnv = "1"
 lazy_static = "0.2"

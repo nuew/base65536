@@ -7,10 +7,12 @@
 #[macro_use]
 extern crate lazy_static;
 
+extern crate fnv;
+
 #[cfg(test)]
 mod test;
 
-use std::collections::HashMap;
+use fnv::FnvHashMap;
 use std::{error, fmt};
 
 const PADDING_BLOCK_START: u32 = 0x1500;
@@ -43,8 +45,8 @@ const BLOCK_STARTS: &'static [u32] =
       0x28000, 0x28100, 0x28200, 0x28300, 0x28400, 0x28500];
 
 lazy_static! {
-    static ref B2S: HashMap<u32, u8> = {
-        let mut b2s = HashMap::with_capacity(BLOCK_STARTS.len());
+    static ref B2S: FnvHashMap<u32, u8> = {
+        let mut b2s = FnvHashMap::with_capacity_and_hasher(BLOCK_STARTS.len(), Default::default());
 
         for b in 0..BLOCK_STARTS.len() {
            b2s.insert(BLOCK_STARTS[b], b as u8);
