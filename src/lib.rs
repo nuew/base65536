@@ -80,6 +80,7 @@ lazy_static! {
 /// Contains configuration parameters for base65536 encoding/decoding
 pub struct Config {
     ignore_garbage: bool,
+    line_wrap: Option<(usize, &'static str)>,
 }
 
 impl Config {
@@ -93,11 +94,22 @@ impl Config {
         self.ignore_garbage = ignore_garbage;
         *self
     }
+
+    #[inline]
+    /// Wrap output at a column with a custom string. You should generally use
+    /// "\n", except on Windows, where you might want to use "\r\n".
+    pub fn wrap(&mut self, wrap: Option<(usize, &'static str)>) -> Config {
+        self.line_wrap = wrap;
+        *self
+    }
 }
 
 impl Default for Config {
     fn default() -> Config {
-        Config { ignore_garbage: false }
+        Config {
+            ignore_garbage: false,
+            line_wrap: None,
+        }
     }
 }
 
@@ -209,13 +221,13 @@ pub fn encode_config<T: ?Sized + AsRef<[u8]>>(input: &T, config: Config) -> Stri
 
 /// Encode arbitrary octets as base65536.
 /// Writes into supplied buffer to avoid allocation.
-pub fn encode_config_buf<T: ?Sized + AsRef<[u8]>>(input: &T, _: Config, buf: &mut String) {
+pub fn encode_config_buf<T: ?Sized + AsRef<[u8]>>(input: &T, config: Config, buf: &mut String) {
     use std::char::from_u32_unchecked;
-
     let input = input.as_ref();
 
     let mut i = 0;
     while i < input.len() {
+        // calculate the to-be-output code point
         let byte1 = input[i];
         let block_start = if i + 1 < input.len() {
             BLOCK_STARTS[input[i + 1] as usize]
@@ -224,10 +236,19 @@ pub fn encode_config_buf<T: ?Sized + AsRef<[u8]>>(input: &T, _: Config, buf: &mu
         };
         let code_point = block_start + byte1 as u32;
 
+        // output wrap if requested
+        if let Some((column, eol)) = config.line_wrap {
+            if (i / 2) % column == 0 && i != 0 {
+                buf.push_str(eol);
+            }
+        }
+
+        // output code point
+        //
         // It is safe to use this because we know that all code points within
         // 0x100 of any possible block_start are defined.
         buf.push(unsafe { from_u32_unchecked(code_point) });
 
-        i += 2;
+        i += 2; // our loop goes up by two
     }
 }
