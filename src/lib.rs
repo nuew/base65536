@@ -7,12 +7,12 @@
 #[macro_use]
 extern crate lazy_static;
 
+#[cfg(feature = "fnv")]
 extern crate fnv;
 
 #[cfg(test)]
 mod test;
 
-use fnv::FnvHashMap;
 use std::{error, fmt};
 
 const PADDING_BLOCK_START: u32 = 0x1500;
@@ -44,9 +44,29 @@ const BLOCK_STARTS: &'static [u32] =
       0x27600, 0x27700, 0x27800, 0x27900, 0x27A00, 0x27B00, 0x27C00, 0x27D00, 0x27E00, 0x27F00,
       0x28000, 0x28100, 0x28200, 0x28300, 0x28400, 0x28500];
 
+#[cfg(feature = "fnv")]
+use fnv::FnvHashMap;
+
+#[cfg(feature = "fnv")]
 lazy_static! {
     static ref B2S: FnvHashMap<u32, u8> = {
         let mut b2s = FnvHashMap::with_capacity_and_hasher(BLOCK_STARTS.len(), Default::default());
+
+        for b in 0..BLOCK_STARTS.len() {
+           b2s.insert(BLOCK_STARTS[b], b as u8);
+        }
+
+        b2s
+    };
+}
+
+#[cfg(not(feature = "fnv"))]
+use std::collections::HashMap;
+
+#[cfg(not(feature = "fnv"))]
+lazy_static! {
+    static ref B2S: HashMap<u32, u8> = {
+        let mut b2s = HashMap::with_capacity(BLOCK_STARTS.len());
 
         for b in 0..BLOCK_STARTS.len() {
            b2s.insert(BLOCK_STARTS[b], b as u8);
