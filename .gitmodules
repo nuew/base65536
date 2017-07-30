@@ -1,0 +1,3 @@
+[submodule "src/test/common"]
+	path = src/test/common
+	url = https://github.com/qntm/base65536-test.git

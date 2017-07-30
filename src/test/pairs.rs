@@ -1,22 +1,24 @@
-const BIN: &'static [&'static [u8]] = &[include_bytes!("pairs/empty.bin"),
-                                        include_bytes!("pairs/every_byte.bin"),
-                                        include_bytes!("pairs/every_pair_of_bytes.bin"),
-                                        include_bytes!("pairs/first_defect.bin"),
-                                        include_bytes!("pairs/hatetris_wr.bin"),
-                                        include_bytes!("pairs/hatetris_wr_rle.bin"),
-                                        include_bytes!("pairs/hatetris_wr_rle_2.bin"),
-                                        include_bytes!("pairs/hello_world.bin"),
-                                        include_bytes!("pairs/lena_std.tif.bin")];
+const BIN: &'static [&'static [u8]] =
+    &[include_bytes!("common/data/pairs/demo.bin"),
+      include_bytes!("common/data/pairs/empty.bin"),
+      include_bytes!("common/data/pairs/firstDefect.bin"),
+      include_bytes!("common/data/pairs/hatetris-wrs/hatetris-wr-rle.bin"),
+      include_bytes!("common/data/pairs/hatetris-wrs/hatetris-wr-rle2.bin"),
+      include_bytes!("common/data/pairs/hatetris-wrs/hatetris-wr.bin"),
+      include_bytes!("common/data/pairs/sample-files/everyByte.bin"),
+      include_bytes!("common/data/pairs/sample-files/everyPairOfBytes.bin"),
+      include_bytes!("common/data/pairs/sample-files/lena_std.tif.bin")];
 
-const TXT: &'static [&'static str] = &[include_str!("pairs/empty.txt"),
-                                       include_str!("pairs/every_byte.txt"),
-                                       include_str!("pairs/every_pair_of_bytes.txt"),
-                                       include_str!("pairs/first_defect.txt"),
-                                       include_str!("pairs/hatetris_wr.txt"),
-                                       include_str!("pairs/hatetris_wr_rle.txt"),
-                                       include_str!("pairs/hatetris_wr_rle_2.txt"),
-                                       include_str!("pairs/hello_world.txt"),
-                                       include_str!("pairs/lena_std.tif.txt")];
+const TXT: &'static [&'static str] =
+    &[include_str!("common/data/pairs/demo.txt"),
+      include_str!("common/data/pairs/empty.txt"),
+      include_str!("common/data/pairs/firstDefect.txt"),
+      include_str!("common/data/pairs/hatetris-wrs/hatetris-wr-rle.txt"),
+      include_str!("common/data/pairs/hatetris-wrs/hatetris-wr-rle2.txt"),
+      include_str!("common/data/pairs/hatetris-wrs/hatetris-wr.txt"),
+      include_str!("common/data/pairs/sample-files/everyByte.txt"),
+      include_str!("common/data/pairs/sample-files/everyPairOfBytes.txt"),
+      include_str!("common/data/pairs/sample-files/lena_std.tif.txt")];
 
 #[test]
 fn sanity() {

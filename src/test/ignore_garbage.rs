@@ -1,23 +1,24 @@
-const BIN: &'static [&'static [u8]] = &[include_bytes!("ignore_garbage/abc.bin"),
-                                        include_bytes!("ignore_garbage/continuation_at_end.bin"),
-                                        include_bytes!("ignore_garbage/line_break.bin"),
-                                        include_bytes!("ignore_garbage/line_breaks.bin"),
-                                        include_bytes!("ignore_garbage/quoted.bin"),
-                                        include_bytes!("ignore_garbage/random_alphanumeric_interference.\
-                                                        bin"),
-                                        include_bytes!("ignore_garbage/space_after.bin"),
-                                        include_bytes!("ignore_garbage/space_before.bin"),
-                                        include_bytes!("ignore_garbage/spaces_everywhere.bin")];
-const TXT: &'static [&'static str] = &[include_str!("ignore_garbage/abc.txt"),
-                                       include_str!("ignore_garbage/continuation_at_end.txt"),
-                                       include_str!("ignore_garbage/line_break.txt"),
-                                       include_str!("ignore_garbage/line_breaks.txt"),
-                                       include_str!("ignore_garbage/quoted.txt"),
-                                       include_str!("ignore_garbage/random_alphanumeric_interference.\
-                                                     txt"),
-                                       include_str!("ignore_garbage/space_after.txt"),
-                                       include_str!("ignore_garbage/space_before.txt"),
-                                       include_str!("ignore_garbage/spaces_everywhere.txt")];
+const BIN: &'static [&'static [u8]] =
+    &[include_bytes!("common/data/ignoreGarbage/abc.bin"),
+      include_bytes!("common/data/ignoreGarbage/continuationAtEnd.bin"),
+      include_bytes!("common/data/ignoreGarbage/lineBreak.bin"),
+      include_bytes!("common/data/ignoreGarbage/lineBreaks.bin"),
+      include_bytes!("common/data/ignoreGarbage/quoted.bin"),
+      include_bytes!("common/data/ignoreGarbage/randomAlphanumericInterference.bin"),
+      include_bytes!("common/data/ignoreGarbage/spaceAfter.bin"),
+      include_bytes!("common/data/ignoreGarbage/spaceBefore.bin"),
+      include_bytes!("common/data/ignoreGarbage/spacesEverywhere.bin")];
+
+const TXT: &'static [&'static str] =
+    &[include_str!("common/data/ignoreGarbage/abc.txt"),
+      include_str!("common/data/ignoreGarbage/continuationAtEnd.txt"),
+      include_str!("common/data/ignoreGarbage/lineBreak.txt"),
+      include_str!("common/data/ignoreGarbage/lineBreaks.txt"),
+      include_str!("common/data/ignoreGarbage/quoted.txt"),
+      include_str!("common/data/ignoreGarbage/randomAlphanumericInterference.txt"),
+      include_str!("common/data/ignoreGarbage/spaceAfter.txt"),
+      include_str!("common/data/ignoreGarbage/spaceBefore.txt"),
+      include_str!("common/data/ignoreGarbage/spacesEverywhere.txt")];
 
 #[test]
 fn sanity() {

@@ -17,5 +17,12 @@ Add the following to your `Cargo.toml`:
 base65536 = "0.1"
 ```
 
+## Testing
+Testing requires that submodules be downloaded. Before testing, run:
+
+```bash
+git submodule update --init
+```
+
 [1]: https://github.com/qntm/base65536
 [2]: https://crates.io/crates/base64
