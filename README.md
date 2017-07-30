@@ -14,7 +14,7 @@ Add the following to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-base65536 = "0.1"
+base65536 = "0.3"
 ```
 
 ## Testing
