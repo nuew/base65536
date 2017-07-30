@@ -90,6 +90,13 @@ impl Config {
     }
 
     #[inline]
+    /// Ignore non-base65536 code points in text.
+    ///
+    /// Without this set, [`decode`] and friends are *very* strict,
+    /// even failing on line breaks. This is to match behaviour with
+    /// the original implementation.
+    ///
+    /// [`decode`]: fn.decode.html
     pub fn ignore_garbage(&mut self, ignore_garbage: bool) -> Config {
         self.ignore_garbage = ignore_garbage;
         *self
@@ -98,6 +105,12 @@ impl Config {
     #[inline]
     /// Wrap output at a column with a custom string. You should generally use
     /// "\n", except on Windows, where you might want to use "\r\n".
+    ///
+    /// Unless called with [`ignore_garbage`] set to `true`, a decoder will fail
+    /// on output created with this enabled. This is to match behaviour with the
+    /// original implementation.
+    ///
+    /// [`ignore_garbage`]: #method.ignore_garbage
     pub fn wrap(&mut self, wrap: Option<(usize, &'static str)>) -> Config {
         self.line_wrap = wrap;
         *self
@@ -148,13 +161,46 @@ pub type Result<T> = ::std::result::Result<T, Error>;
 
 #[inline]
 /// Decode from string reference as octets.
-/// Convienence method for `decode_config(input, Config::default())`
+/// Convenience method for `decode_config(input, Config::default())`
+///
+/// Note that `decode` and friends are *very* strict by default, even failing
+/// on line breaks, as to match behaviour with the original implementation.
+/// To prevent this, instead use with the [`ignore_garbage`]
+/// option, as such:
+///
+/// ```rust
+/// # extern crate base65536;
+/// # use base65536::{Config, decode_config};
+/// # fn main() {
+/// # let input = "";
+/// decode_config(input, Config::new().ignore_garbage(true))
+/// # .unwrap();
+/// # }
+/// ```
+///
+/// [`ignore_garbage`]: struct.Config.html#method.ignore_garbage
 pub fn decode<T: ?Sized + AsRef<str>>(input: &T) -> self::Result<Vec<u8>> {
     decode_config(input, Config::default())
 }
 
 #[inline]
 /// Decode from string reference as octets.
+///
+/// Note that `decode_config` and friends are *very* strict by default, even
+/// failing on line breaks, as to match behaviour with the original
+/// implementation. To prevent this, instead use with the [`ignore_garbage`]
+/// option, as such:
+///
+/// ```rust
+/// # extern crate base65536;
+/// # use base65536::{Config, decode_config};
+/// # fn main() {
+/// # let input = "";
+/// decode_config(input, Config::new().ignore_garbage(true))
+/// # .unwrap();
+/// # }
+///
+/// [`ignore_garbage`]: struct.Config.html#method.ignore_garbage
 pub fn decode_config<T: ?Sized + AsRef<str>>(input: &T, config: Config) -> self::Result<Vec<u8>> {
     let mut buf = Vec::new();
     decode_config_buf(input, config, &mut buf).map(|_| buf)
@@ -162,6 +208,24 @@ pub fn decode_config<T: ?Sized + AsRef<str>>(input: &T, config: Config) -> self:
 
 /// Decode from string reference as octets.
 /// Writes into supplied buffer to avoid allocation.
+///
+/// Note that `decode_config_buf` and friends are *very* strict by default,
+/// even failing on line breaks, as to match behaviour with the original
+/// implementation. To prevent this, instead use with the [`ignore_garbage`]
+/// option, as such:
+///
+/// ```rust
+/// # extern crate base65536;
+/// # use base65536::{Config, decode_config_buf};
+/// # fn main() {
+/// # let input = "";
+/// let mut result = Vec::new();
+///
+/// decode_config_buf(input, Config::new().ignore_garbage(true), &mut result)
+/// # .unwrap();
+/// # }
+///
+/// [`ignore_garbage`]: struct.Config.html#method.ignore_garbage
 pub fn decode_config_buf<T: ?Sized + AsRef<str>>(input: &T,
                                                  config: Config,
                                                  buf: &mut Vec<u8>)
