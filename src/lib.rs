@@ -274,7 +274,7 @@ pub fn decode_config_buf<T: ?Sized + AsRef<str>>(input: &T,
 
 #[inline]
 /// Encode arbitrary octets as base65536.
-/// Convienence method for `encode_config(input, Config::default())`
+/// Convenience method for `encode_config(input, Config::default())`
 pub fn encode<T: ?Sized + AsRef<[u8]>>(input: &T) -> String {
     encode_config(input, Config::default())
 }
