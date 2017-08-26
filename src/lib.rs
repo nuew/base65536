@@ -202,7 +202,7 @@ pub fn decode<T: ?Sized + AsRef<str>>(input: &T) -> self::Result<Vec<u8>> {
 ///
 /// [`ignore_garbage`]: struct.Config.html#method.ignore_garbage
 pub fn decode_config<T: ?Sized + AsRef<str>>(input: &T, config: Config) -> self::Result<Vec<u8>> {
-    let mut buf = Vec::new();
+    let mut buf = Vec::with_capacity(input.as_ref().len()); // unsure as to the ideal capacity
     decode_config_buf(input, config, &mut buf).map(|_| buf)
 }
 
@@ -278,7 +278,10 @@ pub fn encode<T: ?Sized + AsRef<[u8]>>(input: &T) -> String {
 #[inline]
 /// Encode arbitrary octets as base65536.
 pub fn encode_config<T: ?Sized + AsRef<[u8]>>(input: &T, config: Config) -> String {
-    let mut output = String::new();
+    // Some output code points are three bytes, while others are four. As every two bytes of input
+    // results in one character of output, this allocates the necessary space for the maximum
+    // possible output length.
+    let mut output = String::with_capacity(input.as_ref().len() * 2);
     encode_config_buf(input, config, &mut output);
     output
 }
