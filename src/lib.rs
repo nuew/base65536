@@ -3,12 +3,16 @@
 //!
 //! [1]: https://github.com/qntm/base65536
 //! [2]: https://crates.io/crates/base64
+#![cfg_attr(feature = "nightly" , feature(test))]
 
 #[macro_use]
 extern crate lazy_static;
 
 #[cfg(feature = "fnv")]
 extern crate fnv;
+
+#[cfg(feature = "nightly")]
+extern crate test as test_crate;
 
 #[cfg(test)]
 mod test;

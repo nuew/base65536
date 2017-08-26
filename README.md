@@ -24,5 +24,7 @@ Testing requires that submodules be downloaded. Before testing, run:
 git submodule update --init
 ```
 
+Benchmarks are availiable on nightly rust with the `nightly` feature.
+
 [1]: https://github.com/qntm/base65536
 [2]: https://crates.io/crates/base64
