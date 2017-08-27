@@ -89,6 +89,7 @@ pub struct Config {
 
 impl Config {
     #[inline]
+    /// Creates a default configuration.
     pub fn new() -> Config {
         Config::default()
     }
@@ -131,9 +132,19 @@ impl Default for Config {
 }
 
 #[derive(Debug, PartialEq, Eq)]
-/// Represents an error in the decoding process
+/// Represents an error in the decoding process.
 pub enum Error {
+    /// A code point not valid in base65536 was found in the input stream.
+    /// Consider using the [`ignore_garbage`] option.
+    ///
+    /// The usize is the offset from the begining of the input stream where the invalid code point
+    /// was found.
+    ///
+    /// The char is the invalid code point.
+    ///
+    /// [`ignore_garbage`]: struct.Config.html#method.ignore_garbage
     InvalidCodePoint(usize, char),
+    /// The base65536 stream continued after a terminating padding byte.
     InvalidLength,
 }
 
@@ -174,12 +185,26 @@ pub type Result<T> = ::std::result::Result<T, Error>;
 ///
 /// ```rust
 /// # extern crate base65536;
-/// # use base65536::{Config, decode_config};
-/// # fn main() {
+/// # use base65536::{Config, Error, decode_config};
+/// # fn doc() -> Result<Vec<u8>, Error> {
 /// # let input = "";
-/// decode_config(input, Config::new().ignore_garbage(true))
-/// # .unwrap();
+/// let output = decode_config(input, Config::new().ignore_garbage(true))?;
+/// # Ok(output)
 /// # }
+/// # fn main() { doc().unwrap(); }
+/// ```
+///
+/// If you're OK with that, you can use decode as such:
+///
+/// ```rust
+/// # extern crate base65536;
+/// # use base65536::{Error, decode};
+/// # fn doc() -> Result<Vec<u8>, Error> {
+/// # let input = "";
+/// let output = decode(input)?;
+/// # Ok(output)
+/// # }
+/// # fn main() { doc().unwrap(); }
 /// ```
 ///
 /// [`ignore_garbage`]: struct.Config.html#method.ignore_garbage
@@ -197,21 +222,25 @@ pub fn decode<T: ?Sized + AsRef<str>>(input: &T) -> self::Result<Vec<u8>> {
 ///
 /// ```rust
 /// # extern crate base65536;
-/// # use base65536::{Config, decode_config};
-/// # fn main() {
+/// # use base65536::{Config, Error, decode_config};
+/// # fn doc() -> Result<Vec<u8>, Error> {
 /// # let input = "";
-/// decode_config(input, Config::new().ignore_garbage(true))
-/// # .unwrap();
+/// let output = decode_config(input, Config::new().ignore_garbage(true))?;
+/// # Ok(output)
 /// # }
+/// # fn main() { doc().unwrap(); }
+/// ```
 ///
 /// [`ignore_garbage`]: struct.Config.html#method.ignore_garbage
 pub fn decode_config<T: ?Sized + AsRef<str>>(input: &T, config: Config) -> self::Result<Vec<u8>> {
-    let mut buf = Vec::with_capacity(input.as_ref().len()); // unsure as to the ideal capacity
+    // The default capacity was determined by benchmarking instead of math because I got tired.
+    // This should be (and this might actually be) 2x the number of characters.
+    let mut buf = Vec::with_capacity(input.as_ref().len());
     decode_config_buf(input, config, &mut buf).map(|_| buf)
 }
 
 /// Decode from string reference as octets.
-/// Writes into supplied buffer to avoid allocation.
+/// Writes into supplied buffer to avoid unnecessary allocation.
 ///
 /// Note that `decode_config_buf` and friends are *very* strict by default,
 /// even failing on line breaks, as to match behaviour with the original
@@ -220,14 +249,16 @@ pub fn decode_config<T: ?Sized + AsRef<str>>(input: &T, config: Config) -> self:
 ///
 /// ```rust
 /// # extern crate base65536;
-/// # use base65536::{Config, decode_config_buf};
-/// # fn main() {
+/// # use base65536::{Config, Error, decode_config_buf};
+/// # fn doc() -> Result<Vec<u8>, Error> {
 /// # let input = "";
-/// let mut result = Vec::new();
+/// let mut output = Vec::new();
 ///
-/// decode_config_buf(input, Config::new().ignore_garbage(true), &mut result)
-/// # .unwrap();
+/// decode_config_buf(input, Config::new().ignore_garbage(true), &mut output)?;
+/// # Ok(output)
 /// # }
+/// # fn main() { doc().unwrap(); }
+/// ```
 ///
 /// [`ignore_garbage`]: struct.Config.html#method.ignore_garbage
 pub fn decode_config_buf<T: ?Sized + AsRef<str>>(input: &T,
@@ -291,7 +322,7 @@ pub fn encode_config<T: ?Sized + AsRef<[u8]>>(input: &T, config: Config) -> Stri
 }
 
 /// Encode arbitrary octets as base65536.
-/// Writes into supplied buffer to avoid allocation.
+/// Writes into supplied buffer to avoid unnecessary allocation.
 pub fn encode_config_buf<T: ?Sized + AsRef<[u8]>>(input: &T, config: Config, buf: &mut String) {
     use std::char::from_u32_unchecked;
     let input = input.as_ref();
