@@ -2,7 +2,7 @@
 [![Build Status](https://travis-ci.org/nuew/base65536.svg?branch=master)](https://travis-ci.org/nuew/base65536)
 [![Docs.rs](https://docs.rs/base65536/badge.svg)](https://docs.rs/base65536/)
 [![Crates.io](https://img.shields.io/crates/v/base65536.svg)](https://crates.io/crates/base65536)
-[![License](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/nuew/base65536/blob/master/LICENSE)
+[![License](https://img.shields.io/github/license/nuew/base65536.svg)](https://github.com/nuew/base65536/blob/master/LICENSE)
 
 An implementation of [base65536][1] for Rust.
 
