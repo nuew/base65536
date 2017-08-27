@@ -172,7 +172,7 @@ impl error::Error for Error {
     }
 }
 
-pub type Result<T> = ::std::result::Result<T, Error>;
+pub type DecodeResult<T> = ::std::result::Result<T, Error>;
 
 #[inline]
 /// Decode from string reference as octets.
@@ -208,7 +208,7 @@ pub type Result<T> = ::std::result::Result<T, Error>;
 /// ```
 ///
 /// [`ignore_garbage`]: struct.Config.html#method.ignore_garbage
-pub fn decode<T: ?Sized + AsRef<str>>(input: &T) -> self::Result<Vec<u8>> {
+pub fn decode<T: ?Sized + AsRef<str>>(input: &T) -> DecodeResult<Vec<u8>> {
     decode_config(input, Config::default())
 }
 
@@ -232,7 +232,7 @@ pub fn decode<T: ?Sized + AsRef<str>>(input: &T) -> self::Result<Vec<u8>> {
 /// ```
 ///
 /// [`ignore_garbage`]: struct.Config.html#method.ignore_garbage
-pub fn decode_config<T: ?Sized + AsRef<str>>(input: &T, config: Config) -> self::Result<Vec<u8>> {
+pub fn decode_config<T: ?Sized + AsRef<str>>(input: &T, config: Config) -> DecodeResult<Vec<u8>> {
     // The default capacity was determined by benchmarking instead of math because I got tired.
     // This should be (and this might actually be) 2x the number of characters.
     let mut buf = Vec::with_capacity(input.as_ref().len());
@@ -264,7 +264,7 @@ pub fn decode_config<T: ?Sized + AsRef<str>>(input: &T, config: Config) -> self:
 pub fn decode_config_buf<T: ?Sized + AsRef<str>>(input: &T,
                                                  config: Config,
                                                  buf: &mut Vec<u8>)
-                                                 -> self::Result<()> {
+                                                 -> DecodeResult<()> {
     use std::char::from_u32_unchecked;
     let input = input.as_ref();
 
