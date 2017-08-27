@@ -166,10 +166,6 @@ impl error::Error for Error {
             Error::InvalidLength => "invalid length",
         }
     }
-
-    fn cause(&self) -> Option<&error::Error> {
-        None
-    }
 }
 
 pub type DecodeResult<T> = ::std::result::Result<T, Error>;
