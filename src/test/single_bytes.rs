@@ -523,7 +523,7 @@ fn encode() {
         let input = BIN[i];
         let expected = TXT[i];
 
-        assert_eq!(super::encode(input), expected, "Failed at i = {}", i);
+        assert_eq!(super::encode(input, None), expected, "Failed at i = {}", i);
     }
 }
 
@@ -533,7 +533,7 @@ fn decode() {
         let input = TXT[i];
         let expected = BIN[i];
 
-        assert_eq!(super::decode(input).unwrap(),
+        assert_eq!(super::decode(input, false).unwrap(),
                    expected,
                    "Failed at i = {}",
                    i);

@@ -6,8 +6,6 @@
 
 An implementation of [base65536][1] for Rust.
 
-Thanks to the [`base64`][2] crate, which heavily inspired and influenced the API.
-
 ## Installation
 
 Add the following to your `Cargo.toml`:

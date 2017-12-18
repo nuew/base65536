@@ -1,5 +1,4 @@
 //! An implementation of [base65536][1] in Rust.
-//! Usage is similar to that of [`base64`][2].
 //!
 //! [1]: https://github.com/qntm/base65536
 //! [2]: https://crates.io/crates/base64
@@ -59,69 +58,16 @@ lazy_static! {
         (0..BLOCK_STARTS.len()).map(|b| (BLOCK_STARTS[b], b as u8)).collect();
 }
 
-#[derive(Clone, Copy, Debug)]
-/// Contains configuration parameters for base65536 encoding/decoding
-pub struct Config {
-    ignore_garbage: bool,
-    line_wrap: Option<(usize, &'static str)>,
-}
-
-impl Config {
-    #[inline]
-    /// Creates a default configuration.
-    pub fn new() -> Config {
-        Config::default()
-    }
-
-    #[inline]
-    /// Ignore non-base65536 code points in text.
-    ///
-    /// Without this set, [`decode`] and friends are *very* strict,
-    /// even failing on line breaks. This is to match behaviour with
-    /// the original implementation.
-    ///
-    /// [`decode`]: fn.decode.html
-    pub fn ignore_garbage(&mut self, ignore_garbage: bool) -> Config {
-        self.ignore_garbage = ignore_garbage;
-        *self
-    }
-
-    #[inline]
-    /// Wrap output at a column with a custom string. You should generally use
-    /// "\n", except on Windows, where you might want to use "\r\n".
-    ///
-    /// Unless called with [`ignore_garbage`] set to `true`, a decoder will fail
-    /// on output created with this enabled. This is to match behaviour with the
-    /// original implementation.
-    ///
-    /// [`ignore_garbage`]: #method.ignore_garbage
-    pub fn wrap(&mut self, wrap: Option<(usize, &'static str)>) -> Config {
-        self.line_wrap = wrap;
-        *self
-    }
-}
-
-impl Default for Config {
-    fn default() -> Config {
-        Config {
-            ignore_garbage: false,
-            line_wrap: None,
-        }
-    }
-}
-
 #[derive(Debug, PartialEq, Eq)]
 /// Represents an error in the decoding process.
 pub enum Error {
     /// A code point not valid in base65536 was found in the input stream.
-    /// Consider using the [`ignore_garbage`] option.
+    /// Consider using the `ignore_garbage` option.
     ///
     /// The usize is the offset from the begining of the input stream where the invalid code point
     /// was found.
     ///
     /// The char is the invalid code point.
-    ///
-    /// [`ignore_garbage`]: struct.Config.html#method.ignore_garbage
     InvalidCodePoint(usize, char),
     /// The base65536 stream continued after a terminating padding byte.
     InvalidLength,
@@ -151,95 +97,33 @@ pub type DecodeResult<T> = ::std::result::Result<T, Error>;
 
 #[inline]
 /// Decode from string reference as octets.
-/// Convenience method for `decode_config(input, Config::default())`
 ///
-/// Note that `decode` and friends are *very* strict by default, even failing
-/// on line breaks, as to match behaviour with the original implementation.
-/// To prevent this, instead use with the [`ignore_garbage`]
-/// option, as such:
-///
-/// ```rust
-/// # extern crate base65536;
-/// # use base65536::{Config, Error, decode_config};
-/// # fn doc() -> Result<Vec<u8>, Error> {
-/// # let input = "";
-/// let output = decode_config(input, Config::new().ignore_garbage(true))?;
-/// # Ok(output)
-/// # }
-/// # fn main() { doc().unwrap(); }
-/// ```
-///
-/// If you're OK with that, you can use decode as such:
-///
-/// ```rust
-/// # extern crate base65536;
-/// # use base65536::{Error, decode};
-/// # fn doc() -> Result<Vec<u8>, Error> {
-/// # let input = "";
-/// let output = decode(input)?;
-/// # Ok(output)
-/// # }
-/// # fn main() { doc().unwrap(); }
-/// ```
-///
-/// [`ignore_garbage`]: struct.Config.html#method.ignore_garbage
-pub fn decode<T: ?Sized + AsRef<str>>(input: &T) -> DecodeResult<Vec<u8>> {
-    decode_config(input, Config::default())
-}
-
-#[inline]
-/// Decode from string reference as octets.
-///
-/// Note that `decode_config` and friends are *very* strict by default, even
+/// Note that `decode` and [`decode_buf`] are *very* strict by default, even
 /// failing on line breaks, as to match behaviour with the original
-/// implementation. To prevent this, instead use with the [`ignore_garbage`]
-/// option, as such:
+/// implementation. To prevent this, use with the `ignore_garbage`
+/// option.
 ///
-/// ```rust
-/// # extern crate base65536;
-/// # use base65536::{Config, Error, decode_config};
-/// # fn doc() -> Result<Vec<u8>, Error> {
-/// # let input = "";
-/// let output = decode_config(input, Config::new().ignore_garbage(true))?;
-/// # Ok(output)
-/// # }
-/// # fn main() { doc().unwrap(); }
-/// ```
-///
-/// [`ignore_garbage`]: struct.Config.html#method.ignore_garbage
-pub fn decode_config<T: ?Sized + AsRef<str>>(input: &T, config: Config) -> DecodeResult<Vec<u8>> {
+/// [`decode_buf`]: fn.decode_buf.html
+pub fn decode<T: ?Sized + AsRef<str>>(input: &T, ignore_garbage: bool) -> DecodeResult<Vec<u8>> {
     // The default capacity was determined by benchmarking instead of math because I got tired.
     // This should be (and this might actually be) 2x the number of characters.
     let mut buf = Vec::with_capacity(input.as_ref().len());
-    decode_config_buf(input, config, &mut buf).map(|_| buf)
+    decode_buf(input, &mut buf, ignore_garbage).map(|_| buf)
 }
 
 /// Decode from string reference as octets.
-/// Writes into supplied buffer to avoid unnecessary allocation.
+/// Writes into the supplied buffer as to avoid unnecessary allocation.
 ///
-/// Note that `decode_config_buf` and friends are *very* strict by default,
-/// even failing on line breaks, as to match behaviour with the original
-/// implementation. To prevent this, instead use with the [`ignore_garbage`]
-/// option, as such:
+/// Note that [`decode`] and `decode_buf` are *very* strict by default, even
+/// failing on line breaks, as to match behaviour with the original
+/// implementation. To prevent this, use with the `ignore_garbage`
+/// option.
 ///
-/// ```rust
-/// # extern crate base65536;
-/// # use base65536::{Config, Error, decode_config_buf};
-/// # fn doc() -> Result<Vec<u8>, Error> {
-/// # let input = "";
-/// let mut output = Vec::new();
-///
-/// decode_config_buf(input, Config::new().ignore_garbage(true), &mut output)?;
-/// # Ok(output)
-/// # }
-/// # fn main() { doc().unwrap(); }
-/// ```
-///
-/// [`ignore_garbage`]: struct.Config.html#method.ignore_garbage
-pub fn decode_config_buf<T: ?Sized + AsRef<str>>(input: &T,
-                                                 config: Config,
-                                                 buf: &mut Vec<u8>)
-                                                 -> DecodeResult<()> {
+/// [`decode`]: fn.decode.html
+pub fn decode_buf<T: ?Sized + AsRef<str>>(input: &T,
+                                          buf: &mut Vec<u8>,
+                                          ignore_garbage: bool)
+                                          -> DecodeResult<()> {
     use std::char::from_u32_unchecked;
     let input = input.as_ref();
 
@@ -267,7 +151,7 @@ pub fn decode_config_buf<T: ?Sized + AsRef<str>>(input: &T,
 
                 buf.push(byte1 as u8);
                 buf.push(*byte2);
-            } else if !config.ignore_garbage {
+            } else if !ignore_garbage {
                 // safe because the input is a char, which is guaranteed valid
                 return Err(Error::InvalidCodePoint(index,
                                                    unsafe { from_u32_unchecked(code_point) }));
@@ -280,25 +164,43 @@ pub fn decode_config_buf<T: ?Sized + AsRef<str>>(input: &T,
 
 #[inline]
 /// Encode arbitrary octets as base65536.
-/// Convenience method for `encode_config(input, Config::default())`
-pub fn encode<T: ?Sized + AsRef<[u8]>>(input: &T) -> String {
-    encode_config(input, Config::default())
-}
-
-#[inline]
-/// Encode arbitrary octets as base65536.
-pub fn encode_config<T: ?Sized + AsRef<[u8]>>(input: &T, config: Config) -> String {
+///
+/// The `wrap` option allows wrapping the output every so many characters with
+/// a supplied string. You should generally use "\n", though you may want to
+/// use "\r\n" on Windows.
+///
+/// Unless called with `ignore_garbage` on, [`decode`] and [`decode_buf`] will
+/// fail on output generated with a wrap. This is to match behaivour with the
+/// original implementation.
+///
+/// [`decode`]: fn.decode.html
+/// [`decode_buf`]: fn.decode_buf.html
+pub fn encode<T: ?Sized + AsRef<[u8]>>(input: &T, wrap: Option<(usize, &str)>) -> String {
     // Some output code points are three bytes, while others are four. As every two bytes of input
     // results in one character of output, this allocates the necessary space for the maximum
-    // possible output length.
+    // possible output length, assuming that `wrap` is set to None.
+    // A reallocation may be necessary if the `wrap` option is used.
     let mut output = String::with_capacity(input.as_ref().len() * 2);
-    encode_config_buf(input, config, &mut output);
+    encode_buf(input, &mut output, wrap);
     output
 }
 
 /// Encode arbitrary octets as base65536.
-/// Writes into supplied buffer to avoid unnecessary allocation.
-pub fn encode_config_buf<T: ?Sized + AsRef<[u8]>>(input: &T, config: Config, buf: &mut String) {
+/// Writes into the supplied buffer as to avoid unnecessary allocation.
+///
+/// The `wrap` option allows wrapping the output every so many characters with
+/// a supplied string. You should generally use "\n", though you may want to
+/// use "\r\n" on Windows.
+///
+/// Unless called with `ignore_garbage` on, [`decode`] and [`decode_buf`] will
+/// fail on output generated with a wrap. This is to match behaivour with the
+/// original implementation.
+///
+/// [`decode`]: fn.decode.html
+/// [`decode_buf`]: fn.decode_buf.html
+pub fn encode_buf<T: ?Sized + AsRef<[u8]>>(input: &T,
+                                           buf: &mut String,
+                                           wrap: Option<(usize, &str)>) {
     use std::char::from_u32_unchecked;
     let input = input.as_ref();
 
@@ -314,7 +216,7 @@ pub fn encode_config_buf<T: ?Sized + AsRef<[u8]>>(input: &T, config: Config, buf
         let code_point = block_start + byte1 as u32;
 
         // output wrap if requested
-        if let Some((column, eol)) = config.line_wrap {
+        if let Some((column, eol)) = wrap {
             if (i / 2) % column == 0 && i != 0 {
                 buf.push_str(eol);
             }

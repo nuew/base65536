@@ -7,86 +7,63 @@ const TXT_IGNORE: &'static str = include_str!("common/data/ignoreGarbage/randomA
 
 #[bench]
 fn decode(b: &mut Bencher) {
-    let _ = super::decode(TXT); // spin up B2S (lazy_static)
+    let _ = super::decode(TXT, false); // spin up B2S (lazy_static)
 
-    b.iter(|| super::decode(TXT));
-}
-
-#[bench]
-fn decode_config(b: &mut Bencher) {
-    let config = super::Config::default();
-    let _ = super::decode(TXT); // spin up B2S (lazy_static)
-
-    b.iter(|| super::decode_config(TXT, config));
+    b.iter(|| super::decode(TXT, false));
 }
 
 #[bench]
 fn decode_ignore_garbage_with_clean_input(b: &mut Bencher) {
-    let config = super::Config::new().ignore_garbage(true);
-    let _ = super::decode(TXT); // spin up B2S (lazy_static)
+    let _ = super::decode(TXT, false); // spin up B2S (lazy_static)
 
-    b.iter(|| super::decode_config(TXT, config));
+    b.iter(|| super::decode(TXT, true));
 }
 
 #[bench]
 fn decode_ignore_garbage_with_garbage_input(b: &mut Bencher) {
-    let config = super::Config::new().ignore_garbage(true);
-    let _ = super::decode(TXT); // spin up B2S (lazy_static)
+    let _ = super::decode(TXT, false); // spin up B2S (lazy_static)
 
-    b.iter(|| super::decode_config(TXT_IGNORE, config));
+    b.iter(|| super::decode(TXT_IGNORE, true));
 }
 
 #[bench]
 fn decode_config_buf_naive(b: &mut Bencher) {
-    let config = super::Config::default();
-    let _ = super::decode(TXT); // spin up B2S (lazy_static)
+    let _ = super::decode(TXT, false); // spin up B2S (lazy_static)
 
     b.iter(|| {
         let mut buf = Vec::new();
-        super::decode_config_buf(TXT, config, &mut buf)
+        super::decode_buf(TXT, &mut buf, false)
     });
 }
 
 #[bench]
 fn decode_config_buf_smart(b: &mut Bencher) {
-    let config = super::Config::default();
-    let _ = super::decode(TXT); // spin up B2S (lazy_static)
+    let _ = super::decode(TXT, false); // spin up B2S (lazy_static)
 
     b.iter(|| {
         let mut buf = Vec::with_capacity(TXT.len());
-        super::decode_config_buf(TXT, config, &mut buf)
+        super::decode_buf(TXT, &mut buf, false)
     });
 }
 
 #[bench]
 fn encode(b: &mut Bencher) {
-    b.iter(|| super::encode(BIN));
-}
-
-#[bench]
-fn encode_config(b: &mut Bencher) {
-    let config = super::Config::default();
-
-    b.iter(|| super::encode_config(BIN, config));
+    b.iter(|| super::encode(BIN, None));
 }
 
 #[bench]
 fn encode_config_buf_naive(b: &mut Bencher) {
-    let config = super::Config::default();
-
     b.iter(|| {
         let mut string = String::new();
-        super::encode_config_buf(BIN, config, &mut string)
+        super::encode_buf(BIN, &mut string, None)
     });
 }
 
 #[bench]
 fn encode_config_buf_smart(b: &mut Bencher) {
-    let config = super::Config::default();
-
     b.iter(|| {
         let mut string = String::with_capacity(BIN.len() * 2);
-        super::encode_config_buf(BIN, config, &mut string);
+        super::encode_buf(BIN, &mut string, None);
     });
 }
 
@@ -94,9 +71,7 @@ macro_rules! encode_wrap_n{
     ( $n:expr, $encode:ident ) => {
         #[bench]
         fn $encode(b: &mut Bencher) {
-            let config = super::Config::new().wrap(Some(($n, "\n")));
-
-            b.iter(|| super::encode_config(BIN, config));
+            b.iter(|| super::encode(BIN, Some(($n, "\n"))));
         }
     };
 }

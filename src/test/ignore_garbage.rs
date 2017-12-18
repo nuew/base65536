@@ -27,13 +27,11 @@ fn sanity() {
 
 #[test]
 fn decode() {
-    let cfg = super::Config::new().ignore_garbage(true);
-
     for i in 0..TXT.len() {
         let input = TXT[i];
         let expected = BIN[i];
 
-        assert_eq!(super::decode_config(input, cfg).unwrap(),
+        assert_eq!(super::decode(input, true).unwrap(),
                    expected,
                    "Failed at i = {}",
                    i);

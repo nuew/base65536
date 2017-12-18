@@ -13,6 +13,6 @@ const TXT: &'static [&'static str] = &[include_str!("common/data/bad/lineBreak.t
 #[test]
 fn decode() {
     for enctx in TXT {
-        assert!(super::decode(enctx).is_err());
+        assert!(super::decode(enctx, false).is_err());
     }
 }

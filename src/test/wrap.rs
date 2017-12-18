@@ -53,13 +53,11 @@ macro_rules! wrap_n {
 
         #[test]
         fn $encode() {
-            let cfg = super::Config::new().wrap(Some(($n, "\n")));
-
             for i in 0..$bin.len() {
                 let input = $bin[i];
                 let expected = $txt[i];
 
-                assert_eq!(super::encode_config(input, cfg),
+                assert_eq!(super::encode(input, Some(($n, "\n"))),
                            expected,
                            "Failed at i = {}",
                            i);
