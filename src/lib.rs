@@ -17,7 +17,14 @@ extern crate test as test_crate;
 #[cfg(test)]
 mod test;
 
+use std::collections::HashMap;
 use std::{error, fmt};
+
+#[cfg(feature = "fnv")]
+use fnv::FnvBuildHasher as Hasher;
+
+#[cfg(not(feature = "fnv"))]
+use std::collections::hash_map::RandomState as Hasher;
 
 const PADDING_BLOCK_START: u32 = 0x1500;
 const BLOCK_STARTS: &'static [u32] =
@@ -47,37 +54,9 @@ const BLOCK_STARTS: &'static [u32] =
       0x26C00, 0x26D00, 0x26E00, 0x26F00, 0x27000, 0x27100, 0x27200, 0x27300, 0x27400, 0x27500,
       0x27600, 0x27700, 0x27800, 0x27900, 0x27A00, 0x27B00, 0x27C00, 0x27D00, 0x27E00, 0x27F00,
       0x28000, 0x28100, 0x28200, 0x28300, 0x28400, 0x28500];
-
-#[cfg(feature = "fnv")]
-use fnv::FnvHashMap;
-
-#[cfg(feature = "fnv")]
 lazy_static! {
-    static ref B2S: FnvHashMap<u32, u8> = {
-        let mut b2s = FnvHashMap::with_capacity_and_hasher(BLOCK_STARTS.len(), Default::default());
-
-        for b in 0..BLOCK_STARTS.len() {
-           b2s.insert(BLOCK_STARTS[b], b as u8);
-        }
-
-        b2s
-    };
-}
-
-#[cfg(not(feature = "fnv"))]
-use std::collections::HashMap;
-
-#[cfg(not(feature = "fnv"))]
-lazy_static! {
-    static ref B2S: HashMap<u32, u8> = {
-        let mut b2s = HashMap::with_capacity(BLOCK_STARTS.len());
-
-        for b in 0..BLOCK_STARTS.len() {
-           b2s.insert(BLOCK_STARTS[b], b as u8);
-        }
-
-        b2s
-    };
+    static ref BLOCK_START_TO_INDEX: HashMap<u32, u8, Hasher> =
+        (0..BLOCK_STARTS.len()).map(|b| (BLOCK_STARTS[b], b as u8)).collect();
 }
 
 #[derive(Clone, Copy, Debug)]
@@ -279,7 +258,7 @@ pub fn decode_config_buf<T: ?Sized + AsRef<str>>(input: &T,
             buf.push(byte1 as u8);
             done = true;
         } else {
-            let byte2 = B2S.get(&block_start);
+            let byte2 = BLOCK_START_TO_INDEX.get(&block_start);
 
             if let Some(byte2) = byte2 {
                 if done {
