@@ -98,7 +98,6 @@ impl error::Error for Error {
 
 pub type DecodeResult<T> = ::std::result::Result<T, Error>;
 
-#[inline]
 /// Decode from string reference as octets.
 ///
 /// Note that `decode` and [`decode_buf`] are *very* strict by default, even
@@ -127,45 +126,38 @@ pub fn decode_buf<T: ?Sized + AsRef<str>>(input: &T,
                                           buf: &mut Vec<u8>,
                                           ignore_garbage: bool)
                                           -> DecodeResult<()> {
-    use std::char::from_u32_unchecked;
-    let input = input.as_ref();
-
     let mut done = false;
-    for (index, code_point) in input.char_indices() {
-        let code_point = code_point as u32;
+    for (index, code_point) in input.as_ref().char_indices() {
+        let (byte1, block_start) = {
+            const BLOCK_MASK: u32 = (1 << 8) - 1;
+            let code_point = code_point as u32;
 
-        let byte1 = code_point & ((1 << 8) - 1);
-        let block_start = code_point - byte1;
+            let byte1 = code_point & BLOCK_MASK;
+            (byte1 as u8, code_point - byte1)
+        };
 
         if block_start == PADDING_BLOCK_START {
             if done {
                 return Err(Error::InvalidLength);
+            } else {
+                buf.push(byte1);
+                done = true;
             }
-
-            buf.push(byte1 as u8);
-            done = true;
-        } else {
-            let byte2 = BLOCK_START_TO_INDEX.get(&block_start);
-
-            if let Some(byte2) = byte2 {
-                if done {
-                    return Err(Error::InvalidLength);
-                }
-
-                buf.push(byte1 as u8);
+        } else if let Some(byte2) = BLOCK_START_TO_INDEX.get(&block_start) {
+            if done {
+                return Err(Error::InvalidLength);
+            } else {
+                buf.push(byte1);
                 buf.push(*byte2);
-            } else if !ignore_garbage {
-                // safe because the input is a char, which is guaranteed valid
-                return Err(Error::InvalidCodePoint(index,
-                                                   unsafe { from_u32_unchecked(code_point) }));
             }
+        } else if !ignore_garbage {
+            return Err(Error::InvalidCodePoint(index, code_point));
         }
     }
 
     Ok(())
 }
 
-#[inline]
 /// Encode arbitrary octets as base65536.
 ///
 /// The `wrap` option allows wrapping the output every so many characters with
@@ -205,32 +197,24 @@ pub fn encode_buf<T: ?Sized + AsRef<[u8]>>(input: &T,
                                            buf: &mut String,
                                            wrap: Option<(usize, &str)>) {
     use std::char::from_u32_unchecked;
-    let input = input.as_ref();
 
-    let mut i = 0;
-    while i < input.len() {
-        // calculate the to-be-output code point
-        let byte1 = input[i];
-        let block_start = if i + 1 < input.len() {
-            BLOCK_STARTS[input[i + 1] as usize]
-        } else {
-            PADDING_BLOCK_START
-        };
-        let code_point = block_start + u32::from(byte1);
-
-        // output wrap if requested
+    for (count, bytes) in input.as_ref().chunks(2).enumerate() {
         if let Some((column, eol)) = wrap {
-            if (i / 2) % column == 0 && i != 0 {
+            if count % column == 0 && count != 0 {
                 buf.push_str(eol);
             }
         }
 
-        // output code point
-        //
-        // It is safe to use this because we know that all code points within
-        // 0x100 of any possible block_start are defined.
-        buf.push(unsafe { from_u32_unchecked(code_point) });
+        let block_start = match bytes.len() {
+            1 => PADDING_BLOCK_START,
+            2 => BLOCK_STARTS[bytes[1] as usize],
+            _ => unreachable!(),
+        };
 
-        i += 2; // our loop goes up by two
+        // It is safe to use this because we know that all code points within
+        // 0x100 of any possible block_start are defined, and that's the
+        // largest possible addition to block_start.
+        let code_point = block_start + u32::from(bytes[0]);
+        buf.push(unsafe { from_u32_unchecked(code_point) });
     }
 }
