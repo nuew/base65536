@@ -71,7 +71,7 @@ macro_rules! encode_wrap_n{
     ( $n:expr, $encode:ident ) => {
         #[bench]
         fn $encode(b: &mut Bencher) {
-            b.iter(|| super::encode(BIN, Some(($n, "\n"))));
+            b.iter(|| super::encode(BIN, $n));
         }
     };
 }

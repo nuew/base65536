@@ -57,7 +57,7 @@ macro_rules! wrap_n {
                 let input = $bin[i];
                 let expected = $txt[i];
 
-                assert_eq!(super::encode(input, Some(($n, "\n"))),
+                assert_eq!(super::encode(input, $n),
                            expected,
                            "Failed at i = {}",
                            i);

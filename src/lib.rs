@@ -158,6 +158,28 @@ pub fn decode_buf<T: ?Sized + AsRef<str>>(input: &T,
     Ok(())
 }
 
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
+/// Line Wrapping Options
+pub enum WrapOptions<'a> {
+    /// Don't wrap lines at all
+    NoWrap,
+    /// Wrap every so many columns with '\n'. The length must be > 0.
+    WrapAt(usize),
+    /// Wrap every so many columns with a specified string. The length must be > 0.
+    WrapAtWith(usize, &'a str),
+}
+
+impl<'a, T> From<T> for WrapOptions<'a>
+    where T: Into<Option<usize>>
+{
+    fn from(from: T) -> Self {
+        match from.into() {
+            Some(columns) => WrapOptions::WrapAt(columns),
+            None => WrapOptions::NoWrap
+        }
+    }
+}
+
 /// Encode arbitrary octets as base65536.
 ///
 /// The `wrap` option allows wrapping the output every so many characters with
@@ -168,9 +190,14 @@ pub fn decode_buf<T: ?Sized + AsRef<str>>(input: &T,
 /// fail on output generated with a wrap. This is to match behaivour with the
 /// original implementation.
 ///
+/// # Panics
+/// Panics if the wrap is set to every 0 columns.
+///
 /// [`decode`]: fn.decode.html
 /// [`decode_buf`]: fn.decode_buf.html
-pub fn encode<T: ?Sized + AsRef<[u8]>>(input: &T, wrap: Option<(usize, &str)>) -> String {
+pub fn encode<'a, T, W>(input: &T, wrap: W) -> String
+    where T: ?Sized + AsRef<[u8]>, W: Into<WrapOptions<'a>>
+{
     // Some output code points are three bytes, while others are four. As every two bytes of input
     // results in one character of output, this allocates the necessary space for the maximum
     // possible output length, assuming that `wrap` is set to None.
@@ -191,17 +218,29 @@ pub fn encode<T: ?Sized + AsRef<[u8]>>(input: &T, wrap: Option<(usize, &str)>) -
 /// fail on output generated with a wrap. This is to match behaivour with the
 /// original implementation.
 ///
+/// # Panics
+/// Panics if the wrap is set to every 0 columns.
+///
 /// [`decode`]: fn.decode.html
 /// [`decode_buf`]: fn.decode_buf.html
-pub fn encode_buf<T: ?Sized + AsRef<[u8]>>(input: &T,
-                                           buf: &mut String,
-                                           wrap: Option<(usize, &str)>) {
+pub fn encode_buf<'a, T, W>(input: &T, buf: &mut String, wrap: W)
+    where T: ?Sized + AsRef<[u8]>, W: Into<WrapOptions<'a>>
+{
     use std::char::from_u32_unchecked;
 
+    let wrap = wrap.into();
     for (count, bytes) in input.as_ref().chunks(2).enumerate() {
-        if let Some((column, eol)) = wrap {
-            if count % column == 0 && count != 0 {
-                buf.push_str(eol);
+        match wrap {
+            WrapOptions::NoWrap => {},
+            WrapOptions::WrapAt(columns) => {
+                if count % columns == 0 && count != 0 {
+                    buf.push('\n');
+                }
+            },
+            WrapOptions::WrapAtWith(columns, eol) => {
+                if count % columns == 0 && count != 0 {
+                    buf.push_str(eol);
+                }
             }
         }
 
