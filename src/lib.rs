@@ -61,7 +61,7 @@ lazy_static! {
         (0..BLOCK_STARTS.len()).map(|b| (BLOCK_STARTS[b], b as u8)).collect();
 }
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
 /// Represents an error in the decoding process.
 pub enum Error {
     /// A code point not valid in base65536 was found in the input stream.
