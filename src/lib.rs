@@ -27,12 +27,15 @@
 //! use base65536::{WrapOptions, encode};
 //!
 //! // no word wrapping
+//! assert_eq!("㘁ᔃ", encode(&[1, 2, 3], None));
 //! assert_eq!("驨ꍬ啯𒁷ꍲᕤ", encode("hello world", None));
 //!
 //! // word wrapping
+//! assert_eq!("㘁\nᔃ", encode(&[1, 2, 3], 1));
 //! assert_eq!("驨ꍬ啯\n𒁷ꍲᕤ", encode("hello world", 3));
 //!
 //! // word wrapping with a custom line ending
+//! assert_eq!("㘁\r\nᔃ", encode(&[1, 2, 3], WrapOptions::WrapAtWith(1, "\r\n")));
 //! assert_eq!("驨ꍬ啯\r\n𒁷ꍲᕤ", encode("hello world", WrapOptions::WrapAtWith(3, "\r\n")));
 //! ```
 //!
