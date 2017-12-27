@@ -2,8 +2,10 @@ use test_crate::test::Bencher;
 
 const BIN: &'static [u8] = include_bytes!("common/data/pairs/sample-files/everyByte.bin");
 const TXT: &'static str = include_str!("common/data/pairs/sample-files/everyByte.txt");
-const TXT_IGNORE: &'static str = include_str!("common/data/ignoreGarbage/randomAlphanumericInterference.\
-                                               txt");
+const TXT_IGNORE: &'static str = include_str!(
+    "common/data/ignoreGarbage/randomAlphanumericInterference.\
+     txt"
+);
 
 #[bench]
 fn decode(b: &mut Bencher) {
