@@ -38,6 +38,7 @@
 //!
 //! [qntm]: https://qntm.org/
 //! [base65536]: https://github.com/qntm/base65536
+#![doc(html_root_url = "https://docs.rs/base65536/0.4.0")]
 #![cfg_attr(feature = "clippy", feature(plugin))]
 #![cfg_attr(feature = "clippy", plugin(clippy))]
 #![cfg_attr(feature = "nightly", feature(test))]
