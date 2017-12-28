@@ -89,7 +89,7 @@ const TXT_1000: &'static [&'static str] = &[
 ];
 
 macro_rules! wrap_n {
-    ( $n:expr, $sanity:ident, $encode:ident, $bin:ident, $txt:ident ) => {
+    ( $n:expr, $sanity:ident, $encode:ident, $encode_buf:ident, $bin:ident, $txt:ident ) => {
         #[test]
         fn $sanity() {
             assert_eq!($bin.len(), $txt.len());
@@ -107,14 +107,47 @@ macro_rules! wrap_n {
                            i);
             }
         }
+
+        #[test]
+        fn $encode_buf() {
+            for i in 0..$bin.len() {
+                let input = $bin[i];
+                let expected = $txt[i];
+
+                let mut buf = String::new();
+                super::encode_buf(input, &mut buf, $n);
+                assert_eq!(buf, expected, "Failed at i = {}", i);
+            }
+        }
     };
 }
 
-wrap_n!(1, sanity_1, encode_1, BIN_1, TXT_1);
-wrap_n!(2, sanity_2, encode_2, BIN_2, TXT_2);
-wrap_n!(4, sanity_4, encode_4, BIN_4, TXT_4);
-wrap_n!(5, sanity_5, encode_5, BIN_5, TXT_5);
-wrap_n!(76, sanity_76, encode_76, BIN_76, TXT_76);
-wrap_n!(140, sanity_140, encode_140, BIN_140, TXT_140);
-wrap_n!(256, sanity_256, encode_256, BIN_256, TXT_256);
-wrap_n!(1000, sanity_1000, encode_1000, BIN_1000, TXT_1000);
+wrap_n!(1, sanity_1, encode_1, encode_buf_1, BIN_1, TXT_1);
+wrap_n!(2, sanity_2, encode_2, encode_buf_2, BIN_2, TXT_2);
+wrap_n!(4, sanity_4, encode_4, encode_buf_3, BIN_4, TXT_4);
+wrap_n!(5, sanity_5, encode_5, encode_buf_5, BIN_5, TXT_5);
+wrap_n!(76, sanity_76, encode_76, encode_buf_76, BIN_76, TXT_76);
+wrap_n!(
+    140,
+    sanity_140,
+    encode_140,
+    encode_buf_140,
+    BIN_140,
+    TXT_140
+);
+wrap_n!(
+    256,
+    sanity_256,
+    encode_256,
+    encode_buf_256,
+    BIN_256,
+    TXT_256
+);
+wrap_n!(
+    1000,
+    sanity_1000,
+    encode_1000,
+    encode_buf_1000,
+    BIN_1000,
+    TXT_1000
+);

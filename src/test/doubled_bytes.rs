@@ -532,6 +532,18 @@ fn encode() {
 }
 
 #[test]
+fn encode_buf() {
+    for i in 0..BIN.len() {
+        let input = BIN[i];
+        let expected = TXT[i];
+
+        let mut buf = String::new();
+        super::encode_buf(input, &mut buf, None);
+        assert_eq!(buf, expected, "Failed at i = {}", i);
+    }
+}
+
+#[test]
 fn decode() {
     for i in 0..TXT.len() {
         let input = TXT[i];
@@ -543,5 +555,17 @@ fn decode() {
             "Failed at i = {}",
             i
         );
+    }
+}
+
+#[test]
+fn decode_buf() {
+    for i in 0..TXT.len() {
+        let input = TXT[i];
+        let expected = BIN[i];
+
+        let mut buf = Vec::new();
+        super::decode_buf(input, &mut buf, false).unwrap();
+        assert_eq!(buf, expected, "Failed at i = {}", i);
     }
 }

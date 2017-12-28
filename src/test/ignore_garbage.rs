@@ -41,3 +41,15 @@ fn decode() {
         );
     }
 }
+
+#[test]
+fn decode_buf() {
+    for i in 0..TXT.len() {
+        let input = TXT[i];
+        let expected = BIN[i];
+
+        let mut buf = Vec::new();
+        super::decode_buf(input, &mut buf, true).unwrap();
+        assert_eq!(buf, expected, "Failed at i = {}", i);
+    }
+}
