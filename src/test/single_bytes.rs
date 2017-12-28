@@ -1,4 +1,4 @@
-const BIN: &'static [&'static [u8]] = &[
+const BIN: &[&[u8]] = &[
     include_bytes!("common/data/pairs/single-bytes/case0.bin"),
     include_bytes!("common/data/pairs/single-bytes/case100.bin"),
     include_bytes!("common/data/pairs/single-bytes/case101.bin"),
@@ -256,7 +256,7 @@ const BIN: &'static [&'static [u8]] = &[
     include_bytes!("common/data/pairs/single-bytes/case99.bin"),
     include_bytes!("common/data/pairs/single-bytes/case9.bin"),
 ];
-const TXT: &'static [&'static str] = &[
+const TXT: &[&str] = &[
     include_str!("common/data/pairs/single-bytes/case0.txt"),
     include_str!("common/data/pairs/single-bytes/case100.txt"),
     include_str!("common/data/pairs/single-bytes/case101.txt"),

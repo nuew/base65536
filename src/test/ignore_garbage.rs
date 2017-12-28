@@ -1,4 +1,4 @@
-const BIN: &'static [&'static [u8]] = &[
+const BIN: &[&[u8]] = &[
     include_bytes!("common/data/ignoreGarbage/abc.bin"),
     include_bytes!("common/data/ignoreGarbage/continuationAtEnd.bin"),
     include_bytes!("common/data/ignoreGarbage/lineBreak.bin"),
@@ -10,7 +10,7 @@ const BIN: &'static [&'static [u8]] = &[
     include_bytes!("common/data/ignoreGarbage/spacesEverywhere.bin"),
 ];
 
-const TXT: &'static [&'static str] = &[
+const TXT: &[&str] = &[
     include_str!("common/data/ignoreGarbage/abc.txt"),
     include_str!("common/data/ignoreGarbage/continuationAtEnd.txt"),
     include_str!("common/data/ignoreGarbage/lineBreak.txt"),

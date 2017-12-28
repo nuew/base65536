@@ -1,4 +1,4 @@
-const TXT: &'static [&'static str] = &[
+const TXT: &[&str] = &[
     include_str!("common/data/bad/lineBreak.txt"),
     include_str!("common/data/bad/endOfStreamBeginsStream.txt"),
     include_str!("common/data/bad/endOfStreamMidStream.txt"),

@@ -1,4 +1,4 @@
-const BIN: &'static [&'static [u8]] = &[
+const BIN: &[&[u8]] = &[
     include_bytes!("common/data/pairs/demo.bin"),
     include_bytes!("common/data/pairs/empty.bin"),
     include_bytes!("common/data/pairs/firstDefect.bin"),
@@ -10,7 +10,7 @@ const BIN: &'static [&'static [u8]] = &[
     include_bytes!("common/data/pairs/sample-files/lena_std.tif.bin"),
 ];
 
-const TXT: &'static [&'static str] = &[
+const TXT: &[&str] = &[
     include_str!("common/data/pairs/demo.txt"),
     include_str!("common/data/pairs/empty.txt"),
     include_str!("common/data/pairs/firstDefect.txt"),

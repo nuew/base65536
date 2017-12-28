@@ -1,5 +1,5 @@
 // there's a better way to do this, but this is fastest to write
-const BIN: &'static [&'static [u8]] = &[
+const BIN: &[&[u8]] = &[
     include_bytes!("common/data/pairs/doubled-bytes/case0-0.bin"),
     include_bytes!("common/data/pairs/doubled-bytes/case100-100.bin"),
     include_bytes!("common/data/pairs/doubled-bytes/case10-10.bin"),
@@ -257,7 +257,7 @@ const BIN: &'static [&'static [u8]] = &[
     include_bytes!("common/data/pairs/doubled-bytes/case99-99.bin"),
     include_bytes!("common/data/pairs/doubled-bytes/case9-9.bin"),
 ];
-const TXT: &'static [&'static str] = &[
+const TXT: &[&str] = &[
     include_str!("common/data/pairs/doubled-bytes/case0-0.txt"),
     include_str!("common/data/pairs/doubled-bytes/case100-100.txt"),
     include_str!("common/data/pairs/doubled-bytes/case10-10.txt"),
