@@ -27,3 +27,11 @@ fn decode_buf() {
         assert!(super::decode_buf(enctx, &mut buf, false).is_err());
     }
 }
+
+#[test]
+fn decode_slice() {
+    for enctx in TXT {
+        let mut buf = vec![0; enctx.len()].into_boxed_slice();
+        assert!(super::decode_slice(enctx, &mut buf, false).is_err());
+    }
+}

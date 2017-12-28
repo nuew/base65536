@@ -569,3 +569,15 @@ fn decode_buf() {
         assert_eq!(buf, expected, "Failed at i = {}", i);
     }
 }
+
+#[test]
+fn decode_slice() {
+    for i in 0..TXT.len() {
+        let input = TXT[i];
+        let expected = BIN[i];
+
+        let mut buf = vec![0; expected.len()].into_boxed_slice();
+        super::decode_slice(input, &mut buf, false).unwrap();
+        assert_eq!(&*buf, expected, "Failed at i = {}", i);
+    }
+}

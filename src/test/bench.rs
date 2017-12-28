@@ -49,6 +49,16 @@ fn decode_config_buf_smart(b: &mut Bencher) {
 }
 
 #[bench]
+fn decode_slice(b: &mut Bencher) {
+    let _ = super::decode(TXT, false); // spin up B2S (lazy_static)
+
+    // the idea is that this has a static size and is stack allocated
+    // but slice.len() isn't a const function even on const arrays
+    let mut buf = vec![0; TXT.len()].into_boxed_slice();
+    b.iter(|| super::decode_slice(TXT, &mut buf, false));
+}
+
+#[bench]
 fn encode(b: &mut Bencher) {
     b.iter(|| super::encode(BIN, None));
 }
