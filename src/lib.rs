@@ -56,8 +56,6 @@
 //! [qntm]: https://qntm.org/
 //! [base65536]: https://github.com/qntm/base65536
 #![doc(html_root_url = "https://docs.rs/base65536/0.4.0")]
-#![cfg_attr(feature = "clippy", feature(plugin))]
-#![cfg_attr(feature = "clippy", plugin(clippy))]
 #![cfg_attr(feature = "nightly", feature(test))]
 
 #[macro_use]
@@ -82,7 +80,7 @@ use fnv::FnvBuildHasher as Hasher;
 use std::collections::hash_map::RandomState as Hasher;
 
 const PADDING_BLOCK_START: u32 = 0x1500;
-#[cfg_attr(feature = "clippy", allow(unreadable_literal))]
+#[cfg_attr(feature = "cargo-clippy", allow(unreadable_literal))]
 const BLOCK_STARTS: &[u32] = &[
     0x03400, 0x03500, 0x03600, 0x03700, 0x03800, 0x03900, 0x03A00, 0x03B00, 0x03C00, 0x03D00,
     0x03E00, 0x03F00, 0x04000, 0x04100, 0x04200, 0x04300, 0x04400, 0x04500, 0x04600, 0x04700,
