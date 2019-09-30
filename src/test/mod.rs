@@ -25,14 +25,6 @@ mod wrap;
 mod bench;
 
 #[test]
-fn correct_b2s_types() {
-    #[cfg(feature = "fnv")]
-    let _: &::fnv::FnvBuildHasher = BLOCK_START_TO_INDEX.hasher();
-    #[cfg(not(feature = "fnv"))]
-    let _: &::std::collections::hash_map::RandomState = BLOCK_START_TO_INDEX.hasher();
-}
-
-#[test]
 fn error_send() {
     fn assert_send<T: Send>() {}
     assert_send::<Error>();

@@ -18,19 +18,6 @@ Add the following to your `Cargo.toml`:
 base65536 = "0.4"
 ```
 
-### FNV
-
-By default, base65536 uses the [Fowler–Noll–Vo hash function][fnv], from an
-external crate, for a static internal [`HashMap`].
-This has no security implications.
-
-You can disable this, and use the standard library's defualt hash function:
-
-```toml
-[dependencies]
-base65536 = { version = "0.4", default-features = false }
-```
-
 ## Testing
 Testing requires that submodules be downloaded. Before testing, run:
 
@@ -40,10 +27,8 @@ git submodule update --init
 
 Benchmarks are available on nightly rust with the `nightly` feature.
 
-[`HashMap`]: https://doc.rust-lang.org/std/collections/struct.HashMap.html
 [cargo]: https://crates.io/crates/base64
 [docs]: https://docs.rs/base65536/
-[fnv]: https://crates.io/crates/fnv
 [license]: https://github.com/nuew/base65536/blob/master/LICENSE
 [README]: https://github.com/qntm/base65536/blob/master/README.md
 [travis]: https://travis-ci.org/nuew/base65536
