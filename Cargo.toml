@@ -2,6 +2,7 @@
 name = "base65536"
 version = "0.4.0" # please update html_root_url in src/lib.rs
 authors = ["Nuew <code@nuew.net>"]
+edition = "2018"
 description = "A binary encoding optimized for UTF-32/UCS-4 encoded text and Twitter"
 license = "Apache-2.0"
 repository = "https://github.com/nuew/base65536"

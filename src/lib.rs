@@ -58,18 +58,13 @@
 #![doc(html_root_url = "https://docs.rs/base65536/0.4.0")]
 #![cfg_attr(feature = "nightly", feature(test))]
 
-#[macro_use]
-extern crate lazy_static;
-
-#[cfg(feature = "fnv")]
-extern crate fnv;
-
 #[cfg(feature = "nightly")]
 extern crate test as test_crate;
 
 #[cfg(test)]
 mod test;
 
+use lazy_static::lazy_static;
 use std::collections::HashMap;
 use std::{error, fmt};
 
@@ -110,8 +105,9 @@ const BLOCK_STARTS: &[u32] = &[
     0x28000, 0x28100, 0x28200, 0x28300, 0x28400, 0x28500,
 ];
 lazy_static! {
-    static ref BLOCK_START_TO_INDEX: HashMap<u32, u8, Hasher> =
-        (0..BLOCK_STARTS.len()).map(|b| (BLOCK_STARTS[b], b as u8)).collect();
+    static ref BLOCK_START_TO_INDEX: HashMap<u32, u8, Hasher> = (0..BLOCK_STARTS.len())
+        .map(|b| (BLOCK_STARTS[b], b as u8))
+        .collect();
 }
 
 #[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
@@ -352,7 +348,8 @@ where
             buf[pos] = b;
             pos += 1;
         }
-    }).map(|_| pos)
+    })
+    .map(|_| pos)
 }
 
 #[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
