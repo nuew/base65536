@@ -1,4 +1,4 @@
-// Copyright 2017 Ethan Welker (nuew)
+// Copyright 2017-2019 Emma Welker (nuew)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -115,10 +115,7 @@ macro_rules! wrap_n {
                 let input = $bin[i];
                 let expected = $txt[i];
 
-                assert_eq!(super::encode(input, $n),
-                           expected,
-                           "Failed at i = {}",
-                           i);
+                assert_eq!(super::encode(input, $n), expected, "Failed at i = {}", i);
             }
         }
 

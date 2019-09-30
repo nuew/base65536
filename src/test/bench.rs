@@ -1,4 +1,4 @@
-// Copyright 2017 Ethan Welker (nuew)
+// Copyright 2017-2019 Emma Welker (nuew)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -93,7 +93,7 @@ fn encode_config_buf_smart(b: &mut Bencher) {
     });
 }
 
-macro_rules! encode_wrap_n{
+macro_rules! encode_wrap_n {
     ( $n:expr, $encode:ident ) => {
         #[bench]
         fn $encode(b: &mut Bencher) {
