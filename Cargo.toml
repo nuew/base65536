@@ -1,6 +1,6 @@
 [package]
 name = "base65536"
-version = "0.4.0" # please update html_root_url in src/lib.rs
+version = "1.0.0"
 authors = ["Nuew <code@nuew.net>"]
 edition = "2018"
 description = "A binary encoding optimized for UTF-32/UCS-4 encoded text and Twitter"
