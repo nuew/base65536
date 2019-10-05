@@ -41,7 +41,7 @@ git submodule update --init
 Benchmarks are available on nightly rust with the `nightly` feature.
 
 [`HashMap`]: https://doc.rust-lang.org/std/collections/struct.HashMap.html
-[cargo]: https://crates.io/crates/base64
+[cargo]: https://crates.io/crates/base65536
 [docs]: https://docs.rs/base65536/
 [fnv]: https://crates.io/crates/fnv
 [license]: https://github.com/nuew/base65536/blob/master/LICENSE
