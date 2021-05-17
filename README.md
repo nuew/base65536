@@ -15,7 +15,7 @@ Add the following to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-base65536 = "0.4"
+base65536 = "1.0"
 ```
 
 ### FNV
@@ -28,7 +28,7 @@ You can disable this, and use the standard library's defualt hash function:
 
 ```toml
 [dependencies]
-base65536 = { version = "0.4", default-features = false }
+base65536 = { version = "1.0", default-features = false }
 ```
 
 ## Testing
