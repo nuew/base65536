@@ -547,8 +547,6 @@ where
     T: ?Sized + AsRef<[u8]>,
     W: Into<WrapOptions<'a>>,
 {
-    use std::char::from_u32_unchecked;
-
     let wrap = wrap.into();
     for (count, bytes) in input.as_ref().chunks(2).enumerate() {
         match wrap {
@@ -571,10 +569,10 @@ where
             _ => unreachable!(),
         };
 
-        // It is safe to use this because we know that all code points within
+        // It is safe to unwrap because we know that all code points within
         // 0x100 of any possible block_start are defined, and that's the
         // largest possible addition to block_start.
         let code_point = block_start + u32::from(bytes[0]);
-        buf.push(unsafe { from_u32_unchecked(code_point) });
+        buf.push(std::char::from_u32(code_point).unwrap());
     }
 }
