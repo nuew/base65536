@@ -24,7 +24,7 @@ By default, base65536 uses the [Fowler–Noll–Vo hash function][fnv], from an
 external crate, for a static internal [`HashMap`].
 This has no security implications.
 
-You can disable this, and use the standard library's defualt hash function:
+You can disable this, and use the standard library's default hash function:
 
 ```toml
 [dependencies]
